@@ -3,7 +3,7 @@
 let Cache
 const url = require('url')
 const CachePolicy = require('http-cache-semantics')
-const fetch = require('node-fetch-npm')
+const fetch = require('node-fetch')
 const pkg = require('./package.json')
 const retry = require('promise-retry')
 let ssri
@@ -61,8 +61,8 @@ function cacheDelete (uri, opts) {
 function initializeCache (opts) {
   if (typeof opts.cacheManager === 'string') {
     if (!Cache) {
-      // Default cacache-based cache
-      Cache = require('./cache')
+      // Remove Default cacache-based cache
+      throw new Error('This version does not support a default cacheManager (cacache). Implement Redis cacheManager or alike.')
     }
 
     opts.cacheManager = new Cache(opts.cacheManager, opts)

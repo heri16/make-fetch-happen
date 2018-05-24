@@ -48,7 +48,7 @@ function getAgent (uri, opts) {
   // If opts.timeout is zero, set the agentTimeout to zero as well. A timeout
   // of zero disables the timeout behavior (OS limits still apply). Else, if
   // opts.timeout is a non-zero value, set it to timeout + 1, to ensure that
-  // the node-fetch-npm timeout will always fire first, giving us more
+  // the node-fetch timeout will always fire first, giving us more
   // consistent errors.
   const agentTimeout = opts.timeout === 0 ? 0 : opts.timeout + 1
 
@@ -149,13 +149,23 @@ function getProxy (proxyUrl, opts, isHttps) {
   if (proxyUrl.protocol === 'http:' || proxyUrl.protocol === 'https:') {
     if (!isHttps) {
       if (!HttpProxyAgent) {
-        HttpProxyAgent = require('http-proxy-agent')
+        try {
+          HttpProxyAgent = require('http-proxy-agent')
+        } catch(err) {
+          err.message += ' Http-proxy support not included by default. npm install http-proxy-agent'
+          throw err
+        }
       }
 
       return new HttpProxyAgent(popts)
     } else {
       if (!HttpsProxyAgent) {
-        HttpsProxyAgent = require('https-proxy-agent')
+        try {
+          HttpsProxyAgent = require('https-proxy-agent')
+        } catch(err) {
+          err.message += ' Https-proxy support not included by default. npm install https-proxy-agent'
+          throw err
+        }
       }
 
       return new HttpsProxyAgent(popts)
@@ -163,7 +173,12 @@ function getProxy (proxyUrl, opts, isHttps) {
   }
   if (proxyUrl.protocol.startsWith('socks')) {
     if (!SocksProxyAgent) {
-      SocksProxyAgent = require('socks-proxy-agent')
+      try {
+        SocksProxyAgent = require('socks-proxy-agent')
+      } catch(err) {
+        err.message += ' Socks-proxy support not included by default. npm install socks-proxy-agent'
+        throw err
+      }
     }
 
     return new SocksProxyAgent(popts)

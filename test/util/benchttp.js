@@ -3,8 +3,8 @@
 const BB = require('bluebird')
 const Buffer = require('safe-buffer').Buffer
 
-const cacache = require('cacache')
-const fetch = require('node-fetch-npm')
+// Removed: const cacache = require('cacache')
+const fetch = require('node-fetch')
 const niceFetch = require('../..')
 const nock = require('nock')
 const path = require('path')
@@ -87,7 +87,7 @@ function benchCachedFetch () {
 }
 
 function _cachedFetchLoop (n) {
-  cacache.clearMemoized()
+  // Removed: cacache.clearMemoized()
   return niceFetch(URL, {
     cacheManager: CACHE
   }).then(res => res.json()).then(res => {

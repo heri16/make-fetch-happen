@@ -1,10 +1,19 @@
-# make-fetch-happen [![npm version](https://img.shields.io/npm/v/make-fetch-happen.svg)](https://npm.im/make-fetch-happen) [![license](https://img.shields.io/npm/l/make-fetch-happen.svg)](https://npm.im/make-fetch-happen) [![Travis](https://img.shields.io/travis/zkat/make-fetch-happen.svg)](https://travis-ci.org/zkat/make-fetch-happen) [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/zkat/make-fetch-happen?svg=true)](https://ci.appveyor.com/project/zkat/make-fetch-happen) [![Coverage Status](https://coveralls.io/repos/github/zkat/make-fetch-happen/badge.svg?branch=latest)](https://coveralls.io/github/zkat/make-fetch-happen?branch=latest)
+# make-fetch-happen-lite [![npm version](https://img.shields.io/npm/v/make-fetch-happen-lite.svg)](https://npm.im/make-fetch-happen-lite) [![license](https://img.shields.io/npm/l/make-fetch-happen-lite.svg)](https://npm.im/make-fetch-happen-lite) [![Travis](https://img.shields.io/travis/heri16/make-fetch-happen.svg)](https://travis-ci.org/heri16/make-fetch-happen) [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/heri16/make-fetch-happen?svg=true)](https://ci.appveyor.com/project/heri16/make-fetch-happen) [![Coverage Status](https://coveralls.io/repos/github/heri16/make-fetch-happen/badge.svg?branch=latest)](https://coveralls.io/github/heri16/make-fetch-happen?branch=latest)
 
 
-[`make-fetch-happen`](https://github.com/zkat/make-fetch-happen) is a Node.js
-library that wraps [`node-fetch-npm`](https://github.com/npm/node-fetch-npm) with additional
+[`make-fetch-happen-lite`](https://github.com/heri16/make-fetch-happen) is a Node.js
+library that wraps [`node-fetch`](https://github.com/bitinn/node-fetch) with additional
 features [`node-fetch`](https://github.com/bitinn/node-fetch) doesn't intend to include, including HTTP Cache support, request
 pooling, proxies, retries, [and more](#features)!
+
+## Fork Changes
+
+This is a fork of [`make-fetch-happen`](https://github.com/zkat/make-fetch-happen)
+
+* Reverted to the original [`node-fetch`](https://github.com/bitinn/node-fetch).
+* Removed built-in cache and proxy support to make the library much more lightweight.
+* Cache feature can be re-enabled by implementing a Redis Cache Manager or wrapping [`cacache`](https://www.npmjs.com/package/cacache) using [`cache.js`](https://github.com/zkat/make-fetch-happen/blob/latest/cache.js).
+* Proxy feature can be re-enabled by installing [`socks-proxy-agent`](https://www.npmjs.com/package/socks-proxy-agent) or [`https-proxy-agent`](https://www.npmjs.com/package/https-proxy-agent) or [`http-proxy-agent`](https://www.npmjs.com/package/http-proxy-agent).
 
 ## Install
 
@@ -34,7 +43,7 @@ pooling, proxies, retries, [and more](#features)!
 ### Example
 
 ```javascript
-const fetch = require('make-fetch-happen').defaults({
+const fetch = require('make-fetch-happen-lite').defaults({
   cacheManager: './my-cache' // path where cache will be written (and read)
 })
 
@@ -102,7 +111,7 @@ A defaulted `fetch` will also have a `.defaults()` method, so they can be chaine
 ##### Example
 
 ```javascript
-const fetch = require('make-fetch-happen').defaults({
+const fetch = require('make-fetch-happen-lite').defaults({
   cacheManager: './my-local-cache'
 })
 
@@ -149,7 +158,7 @@ make-fetch-happen augments the `node-fetch` API with additional features availab
 
 #### <a name="opts-cache-manager"></a> `> opts.cacheManager`
 
-Either a `String` or a `Cache`. If the former, it will be assumed to be a `Path` to be used as the cache root for [`cacache`](https://npm.im/cacache).
+A `Cache` object.
 
 If an object is provided, it will be assumed to be a compliant [`Cache` instance](https://developer.mozilla.org/en-US/docs/Web/API/Cache). Only `Cache.match()`, `Cache.put()`, and `Cache.delete()` are required. Options objects will not be passed in to `match()` or `delete()`.
 
@@ -158,24 +167,6 @@ By implementing this API, you can customize the storage backend for make-fetch-h
 You can refer to `cache.js` in the make-fetch-happen source code for a reference implementation.
 
 **NOTE**: Requests will not be cached unless their response bodies are consumed. You will need to use one of the `res.json()`, `res.buffer()`, etc methods on the response, or drain the `res.body` stream, in order for it to be written.
-
-The default cache manager also adds the following headers to cached responses:
-
-* `X-Local-Cache`: Path to the cache the content was found in
-* `X-Local-Cache-Key`: Unique cache entry key for this response
-* `X-Local-Cache-Hash`: Specific integrity hash for the cached entry
-* `X-Local-Cache-Time`: UTCString of the cache insertion time for the entry
-
-Using [`cacache`](https://npm.im/cacache), a call like this may be used to
-manually fetch the cached entry:
-
-```javascript
-const h = response.headers
-cacache.get(h.get('x-local-cache'), h.get('x-local-cache-key'))
-
-// grab content only, directly:
-cacache.get.byDigest(h.get('x-local-cache'), h.get('x-local-cache-hash'))
-```
 
 ##### Example
 
@@ -244,7 +235,7 @@ This option follows the standard `fetch` API cache option. This option will do n
 ##### Example
 
 ```javascript
-const fetch = require('make-fetch-happen').defaults({
+const fetch = require('make-fetch-happen-lite').defaults({
   cacheManager: './my-cache'
 })
 

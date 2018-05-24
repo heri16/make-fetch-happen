@@ -2,7 +2,7 @@
 
 const BB = require('bluebird')
 
-const cacache = require('cacache')
+// Removed: const cacache = require('cacache')
 const mkdirp = require('mkdirp')
 const path = require('path')
 const rimraf = require('rimraf')
@@ -34,7 +34,7 @@ function testDir (filename) {
 
 module.exports.reset = reset
 function reset (testDir) {
-  cacache.clearMemoized()
+  // Removed: cacache.clearMemoized()
   process.chdir(__dirname)
   return BB.fromNode(cb => {
     rimraf(testDir, function (err) {
